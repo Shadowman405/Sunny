@@ -28,6 +28,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         networkManager.fetchCurrentWeather(forCity: "Minsk")
+        networkManager.onCompletion = { curentWeather in
+            print(curentWeather.cityName)
+        }
     }
 }
 

@@ -10,6 +10,8 @@ import Foundation
 
 struct NetworkWeatherManager {
     
+    var onCompletion: ((CurrentWeather) -> Void)?
+    
     
     func fetchCurrentWeather(forCity: String) {
         let urlString = "https://api.openweathermap.org/data/2.5/weather?q=\(forCity)&apikey=\(apiKey)"
@@ -17,7 +19,9 @@ struct NetworkWeatherManager {
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: url) { data, response, error in
             if let data = data {
-                let currentWeather = self.parseJson(withData: data)
+                if let currentWeather = self.parseJson(withData: data){
+                    self.onCompletion?(currentWeather)
+                }
             }
         }
         task.resume()
