@@ -19,7 +19,7 @@ class ViewController: UIViewController {
     
     
     @IBAction func searchPressed(_ sender: UIButton) {
-        self.presentSearchAlertController(withTitle: "Enter city name", message: nil, style: .alert) { city in
+        self.presentSearchAlertController(withTitle: "Enter city name", message: nil, style: .alert) {[unowned self] city in
             self.networkManager.fetchCurrentWeather(forCity: city)
         }
     }
@@ -28,8 +28,18 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         networkManager.fetchCurrentWeather(forCity: "Minsk")
-        networkManager.onCompletion = { curentWeather in
-            print(curentWeather.cityName)
+        networkManager.onCompletion = { [weak self] curentWeather in
+            guard let self = self else {return}
+            self.updateInterfaceWith(weather: curentWeather)
+        }
+    }
+    
+    func updateInterfaceWith(weather: CurrentWeather){
+        DispatchQueue.main.async {
+            self.cityLabel.text = weather.cityName
+            self.temperatureLabel.text = weather.temperatureString
+            self.feelsLikeTemperatureLabel.text = weather.feelsLikeTempString
+            self.weatherIconImageView.image = UIImage(systemName: weather.sysytemIconNameString)
         }
     }
 }
