@@ -7,10 +7,18 @@
 //
 
 import UIKit
+import CoreLocation
 
 class ViewController: UIViewController {
     
     var networkManager = NetworkWeatherManager()
+    lazy var locationManager: CLLocationManager = {
+        let lm = CLLocationManager()
+        lm.delegate = self
+        lm.desiredAccuracy = kCLLocationAccuracyKilometer
+        lm.requestWhenInUseAuthorization()
+        return lm
+    }()
 
     @IBOutlet weak var weatherIconImageView: UIImageView!
     @IBOutlet weak var cityLabel: UILabel!
@@ -32,6 +40,10 @@ class ViewController: UIViewController {
             guard let self = self else {return}
             self.updateInterfaceWith(weather: curentWeather)
         }
+        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.requestLocation()
+        }
     }
     
     func updateInterfaceWith(weather: CurrentWeather){
@@ -45,3 +57,16 @@ class ViewController: UIViewController {
 }
 
 
+//MARK: - Location Manager Delegate
+extension ViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else {return}
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error.localizedDescription)
+    }
+}
