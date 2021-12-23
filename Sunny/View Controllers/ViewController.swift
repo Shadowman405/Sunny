@@ -28,14 +28,14 @@ class ViewController: UIViewController {
     
     @IBAction func searchPressed(_ sender: UIButton) {
         self.presentSearchAlertController(withTitle: "Enter city name", message: nil, style: .alert) {[unowned self] city in
-            self.networkManager.fetchCurrentWeather(forCity: city)
+            self.networkManager.fetchCurrentWeather(forRequestType: .cityName(city: city))
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        networkManager.fetchCurrentWeather(forCity: "Minsk")
+        //networkManager.fetchCurrentWeather(forCity: "Minsk")
         networkManager.onCompletion = { [weak self] curentWeather in
             guard let self = self else {return}
             self.updateInterfaceWith(weather: curentWeather)
@@ -64,6 +64,7 @@ extension ViewController: CLLocationManagerDelegate {
         let latitude = location.coordinate.latitude
         let longitude = location.coordinate.longitude
         
+        networkManager.fetchCurrentWeather(forRequestType: .coordinate(latitude: latitude, longitude: longitude))
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
